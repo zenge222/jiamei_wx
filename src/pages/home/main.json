@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "美家",
+  "backgroundTextStyle":"dark",
+  "usingComponents": {
+    "i-button": "../../static/iview/button/index",
+    "van-button": "../../static/vant/button/index",
+    "i-icon": "../../static/iview/icon/index",
+    "van-popup": "../../static/vant/popup/index"
+  }
+}

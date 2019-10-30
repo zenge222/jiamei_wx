@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "服务详情",
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "van-popup": "../../static/vant/popup/index",
+    "van-button": "../../static/vant/button/index",
+    "i-icon": "../../static/iview/icon/index",
+    "van-stepper": "../../static/vant/stepper/index",
+    "van-area": "../../static/vant/area/index"
+  }
+}

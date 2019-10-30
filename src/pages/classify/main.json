@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "分类",
+  "usingComponents": {
+    "van-button": "../../static/vant/button/index",
+    "van-popup": "../../static/vant/popup/index",
+     "i-icon": "../../static/iview/icon/index"
+  }
+}

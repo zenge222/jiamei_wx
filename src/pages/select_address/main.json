@@ -1,0 +1,13 @@
+{
+  "navigationBarTitleText": "选择服务地址",
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "van-popup": "../../static/vant/popup/index",
+    "van-button": "../../static/vant/button/index",
+    "van-icon": "../../static/vant/icon/index",
+    "van-checkbox": "../../static/vant/checkbox/index",
+    "van-submit-bar": "../../static/vant/submit-bar/index",
+    "van-field": "../../static/vant/field/index",
+    "i-icon": "../../static/iview/icon/index"
+  }
+}

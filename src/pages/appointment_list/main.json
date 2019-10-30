@@ -1,0 +1,13 @@
+{
+  "navigationBarTitleText": "预约列表",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "van-button": "../../static/vant/button/index",
+    "van-popup": "../../static/vant/popup/index",
+    "van-rate": "../../static/vant//rate/index",
+    "van-tab": "../../static/vant/tab/index",
+    "van-tabs": "../../static/vant/tabs/index",
+    "van-area": "../../static/vant/area/index",
+    "i-load-more": "../../static/iview/load-more/index"
+  }
+}

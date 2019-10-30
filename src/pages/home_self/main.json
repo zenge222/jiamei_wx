@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "家美",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle":"dark",
+  "usingComponents": {
+    "i-button": "../../static/iview/button/index",
+    "van-button": "../../static/vant/button/index",
+    "i-icon": "../../static/iview/icon/index"
+  }
+}

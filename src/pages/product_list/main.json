@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "产品列表",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "van-button": "../../static/vant/button/index",
+    "van-popup": "../../static/vant/popup/index",
+    "van-tab": "../../static/vant/tab/index",
+    "van-tabs": "../../static/vant/tabs/index",
+    "i-load-more": "../../static/iview/load-more/index"
+  }
+}

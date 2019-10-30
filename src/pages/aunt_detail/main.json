@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "钟点工",
+  "usingComponents": {
+    "van-button": "../../static/vant/button/index",
+    "van-popup": "../../static/vant/popup/index",
+     "i-icon": "../../static/iview/icon/index",
+     "van-rate": "../../static/vant//rate/index"
+  }
+}

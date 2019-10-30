@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "日期选择",
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "van-popup": "../../static/vant/popup/index",
+    "van-button": "../../static/vant/button/index",
+    "i-icon": "../../static/iview/icon/index",
+    "van-area": "../../static/vant/area/index"
+  }
+}
