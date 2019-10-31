@@ -232,17 +232,20 @@ export default {
     })
   },
   onLoad(option) {
-    Object.assign(this.$data, this.$options.data());
+    // Object.assign(this.$data, this.$options.data());
     // 挑选小时工进入 --> 用于立即预约
+    console.log(option)
+    this.detailInfo.productId = option.productId;
     if (this.detailInfo.appointTryId) {
       this.detailInfo.appointTryId = option.appointTryId;
-      this.detailInfo.productId = option.productId;
     }
+    console.log(this.detailInfo)
     // 挑选小时工进入 和 我的预约进入
     this.auntId = option.id;
     let params = {
       id: this.auntId,
-      month: option.time
+      month: option.time,
+      productId:this.detailInfo.productId,
     };
     if (option.showBtn == 0) {
       this.showBtn = false;
