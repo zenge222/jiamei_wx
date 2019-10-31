@@ -216,7 +216,7 @@
           <img class="default_pic" mode="widthFix" :src="noOrder" />
           <p>目前没有任何预约服务</p>
         </div>
-        
+
         <div class="list_card" v-show="appListData.length>0">
           <ul>
             <li class="list_box" v-for="(item,index) in appListData" :key="index">
@@ -595,6 +595,7 @@ export default {
             this.haSreach = true;
           } else {
             this.haSreach = false;
+            _this.hasMore = false;
           }
           let bastPath = res.data.data.baseUrl;
           let resData = res.data.data.list;
@@ -602,9 +603,9 @@ export default {
             val.headImg = bastPath + val.headImg;
             // val.headerImg = bastPath + "/upload/20190514143009766373.png";
           });
-          if (resData.length < 5) {
-            _this.hasMore = false;
-          }
+          // if (resData.length < 5) {
+          //   _this.hasMore = false;
+          // }
           if (flag == "change") {
             _this.appListData = resData;
           } else {
@@ -758,6 +759,7 @@ export default {
   },
   // 上拉加载
   onReachBottom: function() {
+    console.log(this.haSreach, this.hasMore);
     if (this.haSreach) {
       this.appParams.pageNumber++;
       this.getDataList(this.appParams);
