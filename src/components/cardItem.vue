@@ -41,8 +41,9 @@
     <!-- 卡卷 -->
     <div class="card_flex" v-if="cardInfo.type==3">
       <div class="card_padding">
+        <!-- {{cardInfo.priceUnitStr}} -->
         <div class="card_item" style="padding:5px 8px;">
-          提供包月服务 {{cardInfo.price}}元/{{cardInfo.priceUnitStr}}
+          提供包月服务 {{cardInfo.price}}元/小时
           <div class="card_round1"></div>
           <div class="card_white1"></div>
           <div class="card_round2"></div>
