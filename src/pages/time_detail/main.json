@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "服务详情",
+  "navigationBarTitleText": "查看时间",
   "backgroundTextStyle": "dark",
   "usingComponents": {
     "van-popup": "../../static/vant/popup/index",

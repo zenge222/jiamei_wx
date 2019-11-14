@@ -47,6 +47,31 @@ export function _getUnit(unitNumber) {
   return unit;
 }
 
+// 获取星际
+export function _getStarClass(number) {
+  let starClass = "";
+  switch (number) {
+    case 1:
+      starClass = "一";
+      break;
+    case 2:
+      starClass = "二";
+      break;
+    case 3:
+      starClass = "三";
+      break;
+    case 4:
+      starClass = "四";
+      break;
+    case 5:
+      starClass = "五";
+      break;
+    default:
+      break;
+  }
+  return starClass;
+}
+
 // 处理时间选择数据
 export function _getTimeList(eachTime) {
   console.log('_getTimeList')
@@ -126,12 +151,6 @@ export function _getTimeList(eachTime) {
 
 // code js-md5
 export function _getMd5Str(phone) {
-  // MD5.enCode(
-  //   MD5.enCode(timestamp + phone) +
-  //   timestamp +
-  //   MD5.enCode(timestamp + lastNumber) +
-  //   phone
-  // );
   let md5Str = '';
   let lastNumber = phone
     .split("")

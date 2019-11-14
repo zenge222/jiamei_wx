@@ -1,99 +1,51 @@
 <template>
-  <div class="product_list">
-    <div class="home_list" v-if="productParams.type==1">
+  <div class="product_list clearfix">
+    <div class="home_list">
       <div
-        class="card_box"
+        class="card_item2"
         v-for="(item,index) in productList"
         :key="index"
         @click="toDetail(item)"
       >
-        <img style="width:100%;" :src="item.smallImg" mode="widthFix" />
-        <div class="pro_list_info1">
-          <div class="info_item">
-            <h3>{{item.name}}</h3>
-            <div class="price item_top">
+        <!-- type 1 礼包  2 钟点工 3 双拼 -->
+        <div class="title_group">
+          <h3 v-text="item.name"></h3>
+          <p v-if="item.type==1" v-text="item.intro"></p>
+        </div>
+        <div class="card_group">
+          <img
+            style="width:100%;"
+            :src="item.smallImg"
+            mode="widthFix"
+          />
+          <div class="card_btm">
+            <div class="bg_img">
+              <img
+                style="width:100%;"
+                src="https://file.omnrj.com/static/images/pro_dec.png"
+                mode="widthFix"
+              />
+              <p v-text="item.name"></p>
+            </div>
+            <div class="price_item" v-if="item.type==1">
               <span class="activity">活动价￥</span>
-              <span style="font-size:25px;">{{item.productPackages[0].price}}</span>
+              <span>{{item.productPackages[0].price}}</span>
+              <!-- <span>/{{mainProduct.productPackages[0].serviceNum}}次</span> -->
               <span>/{{item.productPackages[0].unitStr}}</span>
-              <!-- <span>/{{item.productPackages[0].serviceNum}}次</span> -->
+              <div class="old_price">
+                <span v-text="item.productPackages[0].originalPrice"></span>
+                <span>/{{item.productPackages[0].unitStr}}</span>
+              </div>
             </div>
-          </div>
-          <div class="info_item">
-            <em>{{item.intro}}</em>
-            <div class="flex_item item_bottom">
-              <i>{{item.productPackages[0].originalPrice}}/{{item.productPackages[0].unitStr}}</i>
-              <!-- <span></span> -->
-              <!-- <p>/{{item.productPackages[0].serviceNum}}次</p> -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="home_list" v-if="productParams.type==2">
-      <div
-        class="card_box"
-        v-for="(item,index) in productList"
-        :key="index"
-        @click="toDetail(item)"
-      >
-        <img style="width:100%;" :src="item.smallImg" mode="widthFix" />
-        <div class="pro_list_info1">
-          <div class="info_item">
-            <h3>{{item.name}}</h3>
-            <div class="price item_top">
-              <span style="font-size:12px;">每{{item.priceUnitStr}}￥</span>
-              <span style="font-size:25px;">{{item.price}}</span>
-            </div>
-          </div>
-          <div class="info_item">
-            <em>{{item.intro}}</em>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--  -->
-    <div class="home_list" v-if="productParams.type==3">
-      <div
-        class="card_box"
-        v-for="(item,index) in productList"
-        :key="index"
-        @click="toDetail(item)"
-      >
-        <!--  -->
-        <div class="title_head">
-          <h3>{{item.name}}</h3>
-          <div class="title_adorn">
-            <img src="https://file.omnrj.com/static/images/def_label.png" mode="widthFix" />
-            <p>服务任选</p>
-          </div>
-          <em>{{item.intro}}</em>
-        </div>
-        <img style="width:100%;" :src="item.smallImg" mode="widthFix" />
-        <div class="card_flex">
-          <div class="card_padding">
-            <div class="card_item">
-              提供包月服务 {{item.price}}元/{{item.priceUnitStr}}
-              <div class="card_round1"></div>
-              <div class="card_white1"></div>
-              <div class="card_round2"></div>
-              <div class="card_white2"></div>
-            </div>
-          </div>
-          <div class="card_padding">
-            <div class="card_item">
-              体验大礼包 {{item.productPackages[0].price}}/{{item.productPackages[0].unitStr}}
-              <div class="card_round1"></div>
-              <div class="card_white1"></div>
-              <div class="card_round2"></div>
-              <div class="card_white2"></div>
+            <div class="price_item" v-if="item.type==2">
+              <span>{{item.price}}/</span>
+              <span>{{item.priceUnitStr}}</span>
             </div>
           </div>
         </div>
       </div>
+      <i-load-more :tip="hasMore?'数据加载中':'暂无更多产品'" :loading="hasMore" />
     </div>
-
-    <i-load-more :tip="hasMore?'数据加载中':'暂无更多产品'" :loading="hasMore" />
   </div>
 </template>
 
@@ -154,8 +106,9 @@ export default {
               _this.productList = _this.productList.concat(resData);
             }
           }
-          if (this.productParams.pageNumber == page.totalPage) {
+          if (this.productParams.pageNumber == page.totalPage||res.data.data.list.length==0) {
             _this.hasMore = false;
+            return;
           }
         }
       });
@@ -198,67 +151,71 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.pro_container {
-  padding: 12px;
-  .pro_item {
-    padding: 16px 12px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 60px rgba(203, 203, 203, 0.15);
-    margin-bottom: 12px;
-    img {
-      width: 100%;
+.card_item2 {
+  background: url("https://file.omnrj.com/static/images/home_pro_bg.png")
+    no-repeat;
+  background-size: 100%;
+  width: 100%;
+  .title_group {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    padding: 10px 15px;
+    > h3 {
+      font-size: 18px;
+      line-height: 1;
+      padding-right: 13px;
     }
-    .pro_info {
-      .info_item {
-        display: flex;
-        justify-content: space-between;
-        padding: 4px 0;
-        h3 {
-          font-size: 20px;
-        }
-        em {
-          color: #eb5d2a;
-          font-size: 12px;
-          span {
-            font-size: 18px;
-          }
-        }
-        .info_label {
-          i {
-            display: inline-block;
-            margin-right: 10px;
-            color: #eb5d2a;
-            font-size: 12px;
-            line-height: 2;
-            padding: 0 6px;
-            border-radius: 8px;
-            background: rgba(235, 93, 42, 0.1);
-          }
-        }
-        .original_price {
-          font-size: 12px;
-          color: #bababa;
-        }
-        .price {
-          text-decoration: line-through;
-        }
-        .see_detail {
-          position: relative;
-          background: #eb5d2a;
-          color: #fff;
-          line-height: 2;
-          font-size: 14px;
-          border-radius: 20px;
-          padding: 0 26px 0 10px;
-          img {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            width: 8px;
-            transform: translate(0, -50%);
-          }
-        }
+    > p {
+      font-size: 9px;
+      line-height: 1;
+      padding: 4px 6px;
+      background: #fff;
+      color: #ea5d2b;
+      border-radius: 2.5px;
+    }
+  }
+  .card_group {
+    // padding: 0 35px;
+    box-shadow: 6px 6px 9px rgba(0, 0, 0, 0.08);
+    margin: 0 35px 35px 35px;
+    >img{
+      display: block;
+    }
+  }
+  .card_btm {
+    display: flex;
+    justify-content: space-between;
+    height: 48px;
+    .bg_img {
+      width: 110px;
+      position: relative;
+      > img {
+        position: absolute;
+        left: -4px;
+        top: 0;
+        z-index: 1;
+      }
+      > p {
+        position: absolute;
+        z-index: 2;
+        left: 11px;
+        top: 11px;
+        font-size: 14px;
+        color: #fff;
+      }
+    }
+    .price_item {
+      text-align: right;
+      padding-right: 10px;
+      > span {
+        color: #ea5d2b;
+        font-size: 12px;
+      }
+      .old_price {
+        text-decoration: line-through;
+        font-size: 9px;
+        color: #999;
       }
     }
   }

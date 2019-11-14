@@ -1,17 +1,39 @@
 <template>
-  <div class="classify_detail">
-    <!-- <img :src="detailImg" class="detail_img" mode="widthFix"> -->
-    <div class="class_detail_parse">
-      <wxParse :content="content" />
+  <div class="detail">
+    <img class="detail_pic" mode="widthFix" :src="productDetail.bannerImg" />
+    <div class="info">
+      <div class="info_left">
+        <h3>{{productDetail.name}}</h3>
+        <p>{{productDetail.intro}}</p>
+      </div>
+      <div class="info_right">
+        <h3>
+          <span>{{productDetail.price}}/{{productDetail.priceUnitStr}}</span>
+        </h3>
+      </div>
     </div>
-    <div :class="{'sel_service':true,'fix-iphonex-buttom':isIphoneX}">
-      <button v-if="detailInfo.type==3||detailInfo.type==1" class="sel_btn" @click="toDetail">购买体验包</button>
-      <button
-        v-if="detailInfo.type==3||detailInfo.type==2"
-        class="sel_btn"
-        @click="toAppointmentList"
-      >我要包月</button>
+
+    <div class="class_title">
+      <div class="line line_left"></div>
+      <h3>商品详情</h3>
+      <div class="line line_right"></div>
     </div>
+    <div class="product_content">
+      <wxParse :content="productDetail.content" />
+    </div>
+
+    <div :class="{'goods_action_box':true,'fix-iphonex-buttom':isIphoneX}">
+      <div class="icon_box" @click="selAddrList=true;">
+        <img mode="widthFix" :src="iconPoint" />
+        <p>{{wxChangeLocation.orderCity}}</p>
+      </div>
+      <div class="icon_box" @click="toCallPhone">
+        <img mode="widthFix" :src="iconCustomerService2" />
+        <p>客服</p>
+      </div>
+      <div @click="selAddr=true;" class="right_btn">立即预约</div>
+    </div>
+
     <van-popup
       custom-class="bottom_pop"
       :show="selAddr"
@@ -26,18 +48,10 @@
       </div>
       <div class="container_box">
         <div class="input_box">
-          <input @click="selAddrList=true" type="text" :value="toFindInfo.areaValueName" disabled />
+          <input @click="selAddrList2=true" type="text" :value="toFindInfo.areaValueName" disabled />
           <i-icon class="enter_icon" size="16" type="enter" />
         </div>
-        <!-- 
-          <div class="input_box">
-            <input @click="selAddrList2=true" type="text" :value="toFindInfo.streetName" disabled>
-            <i-icon class="enter_icon" size="16" type="enter"/>
-          </div>
-        -->
-
         <div class="input_box">
-          <!-- toFindInfo.contactsPhone -->
           <input
             type="text"
             maxlength="11"
@@ -52,6 +66,26 @@
       </div>
     </van-popup>
 
+    <toLoginPopup :showPop.sync="login_pop_show"></toLoginPopup>
+    <!-- <phonePopup :showPop.sync="phoneShow"></phonePopup> -->
+    <!-- 预约区域 -->
+    <van-popup
+      custom-class="bottom_pop"
+      :show="selAddrList2"
+      position="bottom"
+      overlay="false"
+      @close="selAddrList=false"
+    >
+      <van-area
+        :value="areaValue2"
+        @cancel="selAddrList2=false"
+        @confirm="onConfirm2"
+        columns-num="3"
+        title="请选择地址"
+        :area-list="areaList"
+      />
+    </van-popup>
+    <!-- 底部区域选择 -->
     <van-popup
       custom-class="bottom_pop"
       :show="selAddrList"
@@ -65,129 +99,40 @@
         @confirm="onConfirm"
         columns-num="3"
         title="请选择地址"
-        @change="areaChange"
         :area-list="areaList"
       />
     </van-popup>
-    <!--  -->
-    <!-- 街道 -->
-    <!-- <van-popup
-      custom-class="bottom_pop"
-      :show="selAddrList2"
-      position="bottom"
-      overlay="false"
-      @change="streetChange"
-      @close="selAddrList2=false"
-    >-->
-    <!-- <van-area
-        :value="streetValue"
-        @cancel="selAddrList2=false"
-        @confirm="onConfirm2"
-        columns-num="1"
-        title="请选择街道"
-        :area-list="streetList"
-    />-->
-    <!-- <van-picker
-        show-toolbar
-        title="请选择街道"
-        :columns="streetNames"
-        @change="streetChange"
-        :default-index="streetIndex"
-        @cancel="selAddrList2=false"
-        @confirm="selStreetSubmit"
-    />-->
-    <!-- </van-popup> -->
-
-    <!-- -->
-    <!--       
-      lunar='false'
-      clean="true"
-      @selectYear="selectYear"
-    -->
-    <!-- <Calendar
-      :months="months"
-      :value="value"
-      @next="next"
-      @prev="prev"
-      multi
-      :begin="begin"
-      :hasPrev="hasPrev"
-      :hasNext="hasNext"
-      :end="end"
-      :events="events"
-      @select="select"
-      ref="calendar"
-      @selectMonth="selectMonth"
-    />-->
-    <!-- <button @click="setToday">返回今日</button> -->
     <i-message id="message" />
   </div>
 </template>
 
 <script>
-import Calendar from "change-mpvue-calendar";
-import "change-mpvue-calendar/src/style.css";
+import { _getProductDetail } from "../../service/detail";
+import { mapState, mapActions, mapMutations } from "vuex";
+import { _getUnit } from "../../api/common";
+import wxParse from "mpvue-wxparse";
+import qs from "qs";
+import toLoginPopup from "../../components/toLoginPopup";
+import phonePopup from "../../components/phonePopup";
 import {
   _getclassifyDetail,
   _addAppointTry,
   _getAppointcitys
 } from "../../service/classify";
-import { mapState, mapActions } from "vuex";
-import wxParse from "mpvue-wxparse";
 export default {
+  name: "detail",
   data() {
     return {
-      hasPrev: false,
-      hasNext: true,
-      months: [
-        // "January",
-        // "February",
-        // "March",
-        // "April",
-        // "May",
-        // "June",
-        // "July",
-        // "August",
-        // "September",
-        // "October",
-        // "November",
-        // "December"
-        "一月",
-        "二月",
-        "三月",
-        "四月",
-        "五月",
-        "六月",
-        "七月",
-        "八月",
-        "九月",
-        "十月",
-        "十一月",
-        "十二月"
-      ],
-      disabledarr: ["2018-6-27", "2018-6-25"],
-      value: [],
-      begin: [], // 2019, 5, 13
-      end: [], // 2019, 6, 13
-      // events: { "2019-5-13": "今日备注", "2019-5-14": "一条很长的明日备注" },
-      content: "",
-      currentMonth: 0,
-      detailInfo: {
-        type: 0,
-        content: "",
-        id: "",
-        intro: "",
-        name: "",
-        price: "",
-        productId: "",
-        productTypeTitle: ""
-      },
-      detailImg: this.imgBastPath + "details_page_pic.png",
-      selAddr: false,
+      iconPoint: this.imgBastPath + "icon_Point.png",
+      payPopProduct: this.imgBastPath + "pay_pop_product.png",
+      iponeIcon: this.imgBastPath + "ipone.png",
+      iconCustomerService2: this.imgBastPath + "icon_customer_service.png",
+      paymentShow: false,
+      login_pop_show: false,
+      phoneShow: false,
       selAddrList: false,
-      areaValue: "", //310115
-      streetValue: "", // 110000
       selAddrList2: false,
+      selAddr: false,
       toFindInfo: {
         areaValueName: "请选择区域", // 上海市-上海市-浦东区
         // streetName: "测试街道1",
@@ -195,72 +140,61 @@ export default {
         // streetId: "1",
         contactsPhone: ""
       },
-
-      areaList: {
-        // province_list: {
-        //   110000: "北京省",
-        //   120000: "天津省",
-        //   310000: "上海市"
-        // },
-        // city_list: {
-        //   310100: "上海市",
-        //   110100: "北京市",
-        //   120100: "天津市"
-        // },
-        // county_list: {
-        //   110101: "东城区",
-        //   110102: "西城区",
-        //   110103: "朝阳区",
-        //   110104: "丰台区",
-        //   120101: "和平区",
-        //   120102: "河东区",
-        //   120103: "河西区",
-        //   120104: "南开区",
-        //   120105: "河北区",
-        //   310115: "浦东新区"
-        // }
+      typeIndex: 0,
+      typeCount: 1,
+      productDetail: {
+        bannerImg: "",
+        content: "", // 商品详情
+        id: "",
+        intro: "", // 套餐内容
+        name: "",
+        price: 0,
+        priceUnit: 0,
+        priceUnitStr: ""
       },
-      // streetNames: [
-      //   "测试街道1",
-      //   "测试街道2",
-      //   "测试街道3",
-      //   "测试街道4",
-      //   "测试街道5"
-      // ],
-      // streetIds: [1, 2, 3, 4, 5],
-      // streetNames: [
-      //   { text: "测试街道1", id: 1 },
-      //   { text: "测试街道2", id: 2 },
-      //   { text: "测试街道3", id: 3 },
-      //   { text: "测试街道4", id: 4 }
-      // ],
-      // streetIndex: 0
-      typeId: ""
+      orderId: "",
+      areaValue: "", //310115
+      currentCity: "",
+      areaList: null,
+      areaValue2: ""
     };
   },
   components: {
-    Calendar,
-    wxParse
+    wxParse,
+    toLoginPopup,
+    phonePopup
   },
   computed: {
     ...mapState({
       isIphoneX: state => state.login.isIphoneX,
-      phoneLoginInfo: state => state.login.phoneLoginInfo,
-      wxChangeLocation: state => state.login.wxChangeLocation
+      authorization: state => state.login.authorization,
+      phoneLogin: state => state.login.phoneLogin,
+      wxChangeLocation: state => state.login.wxChangeLocation,
+      phoneLoginInfo: state => state.login.phoneLoginInfo
     })
   },
   onLoad(option) {
-    // this.initDate();
-    // console.log(this.imgBastPath);
-    // console.log(option);
+    // 重置data 完成初始化
+    Object.assign(this.$data, this.$options.data());
+    this.currentCity = this.wxChangeLocation.orderCity;
+    this.orderId = option.id;
+    _getAppointcitys().then(res => {
+      if (res.data.success) {
+        this.areaList = res.data.data.area_list;
+      }
+    });
+    this.selAddrList2 = false;
+    this.selAddr = false;
+    this.toFindInfo.areaValueName = "请选择区域";
+    this.toFindInfo.areaCodes = [];
+    this.toFindInfo.contactsPhone = "";
     let params = {
       id: option.id
     };
     this.typeId = option.id;
     _getclassifyDetail(params).then(res => {
       if (res.data.success) {
-        // console.log(res);
-        this.detailInfo = res.data.data.product;
+        this.productDetail = res.data.data.product;
         this.content = res.data.data.product.content;
         // this.detailImg =
         //   res.data.data.baseUrl +
@@ -273,102 +207,96 @@ export default {
     });
   },
   onShow() {
-    this.init();
+    this.login_pop_show = false;
+    this.paymentShow = false;
+
+    let params = {
+      id: this.orderId,
+      loading: true
+    };
+    _getProductDetail(params).then(res => {
+      if (res.data.success) {
+        let baseUrl = res.data.data.baseUrl;
+        this.productDetail = res.data.data.product;
+        // if (this.productDetail.productImages.length > 0) {
+        //   this.productDetail.productImages[0].imgUrl =
+        //     baseUrl + this.productDetail.productImages[0].imgUrl;
+        // }
+        this.productDetail.bannerImg = baseUrl + this.productDetail.bannerImg;
+        this.productDetail.smallImg = baseUrl + this.productDetail.smallImg;
+        this.productDetail.productPackages.forEach(val => {
+          val.unitStr = _getUnit(val.priceUnit);
+        });
+      }
+    });
   },
   onHide() {
     // 重置data 完成初始化
     // Object.assign(this.$data, this.$options.data());
   },
-  created() {},
   methods: {
-    ...mapActions(["setClassify"]),
-    init() {
-      let _this = this;
-      _getAppointcitys().then(res => {
-        if (res.data.success) {
-          _this.areaList = res.data.data.area_list;
-          for (let i in _this.areaList.county_list) {
-            if (
-              _this.areaList.county_list[i] == _this.wxChangeLocation.orderArea
-            ) {
-              _this.areaValue = i;
-              return;
-              // console.log(i)
-              // console.log(_this.areaList.county_list[i]);
-            }
-          }
-          // console.log(_this.areaList.county_list);
-          // console.log(_this.wxChangeLocation.orderArea);
-        }
-      });
-      // this.areaValue = "310115";
-      // this.streetValue = "110000";
-      this.selAddrList = false;
-      this.selAddr = false;
-      this.toFindInfo.areaValueName = "请选择区域";
-      this.toFindInfo.areaCodes = [];
-      this.toFindInfo.contactsPhone = "";
+    ...mapActions(["sendOrderInfo"]),
+    ...mapMutations(["CHANGE_CHANGE_LOCATION"]),
+    paymentClose() {
+      this.paymentShow = false;
     },
-    //
-    toDetail() {
-      let url = `../detail/main?id=${this.typeId}`;
-      wx.navigateTo({ url });
-    },
-    toAppointmentList() {
-      this.selAddr = true;
-      // let url = `../appointment/main`;
-      // wx.navigateTo({ url });
-    },
-    onConfirm(e) {
+    onConfirm2(e) {
       let values = e.mp.detail.values;
       let areas = `${values[0].name}-${values[1].name}-${values[2].name}`;
-      this.areaValue = values[2].code;
+      this.areaValue2 = values[2].code;
       this.toFindInfo.areaValueName = areas;
       this.toFindInfo.areaCodes = [];
       values.forEach(val => {
         this.toFindInfo.areaCodes.push(val.code);
       });
+      this.selAddrList2 = false;
+    },
+    onConfirm(e) {
+      let values = e.mp.detail.values;
+      // 储存订单信息  解析经纬度 待处理
+      let city = values[1].name;
+      if (city.charAt(city.length - 1) == "市") {
+        city = city.substr(0, city.length - 1);
+      }
+      let params = {
+        province: values[0].name,
+        city: city,
+        area: values[2].name,
+        name: "order"
+      };
+      this.CHANGE_CHANGE_LOCATION(params);
+      // 请求地区相应数据 xxx
+      // console.log(values[0].name, values[1].name, values[2].name);
       this.selAddrList = false;
+      // 关联预约区域
+      let areas = `${values[0].name}-${values[1].name}-${values[2].name}`;
+      this.areaValue2 = values[2].code;
+      this.toFindInfo.areaValueName = areas;
+      this.toFindInfo.areaCodes = [];
+      values.forEach(val => {
+        this.toFindInfo.areaCodes.push(val.code);
+      });
+      this.selAddrList2 = false;
     },
-    //
-    areaChange(e) {
-      console.log("areaChange");
-      this.streetIndex = 0;
-      // 请求 街道数据
-      // this.streetNames = [
-      //   { text: "测试街道7", id: 7 },
-      //   { text: "测试街道8", id: 8 },
-      // ];
+    toCallPhone() {
+      wx.makePhoneCall({
+        phoneNumber: "400-888-8888"
+      });
     },
-    // streetChange(e) {
-    //   const { picker, value, index } = e.mp.detail;
-    //   // console.log(`当前值：${value}, 当前索引：${index}`);
-    // },
-    // selStreetSubmit(e) {
-    //   console.log(e);
-    //   const { picker, value, index } = e.mp.detail;
-    //   // console.log(`当前值：${value}, 当前索引：${index}`);
-    //   this.toFindInfo.streetName = value.text;
-    //   this.toFindInfo.streetId = value.id;
-    // },
+    toRegOrLogin() {
+      let url = `../login/main`;
+      wx.navigateTo({ url });
+    },
     toAppointment() {
+      let _this = this;
       let reg = /^((13|14|15|17|18)[0-9]{1}\d{8})$/;
       if (this.toFindInfo.areaCodes.length < 3) {
         this.$Message({
           content: "请选择区域",
           type: "default"
         });
-      }
-      // else if (
-      //   !this.toFindInfo.contactsPhone ||
-      //   !reg.test(this.toFindInfo.contactsPhone)
-      // ) {
-      //   this.$Message({
-      //     content: "请输入正确的手机号",
-      //     type: "default"
-      //   });
-      // }
-      else {
+        return;
+      } else {
         // 添加分类信息
         let params = {
           provinceId: this.toFindInfo.areaCodes[0],
@@ -376,83 +304,24 @@ export default {
           areaId: this.toFindInfo.areaCodes[2],
           areaText: this.toFindInfo.areaValueName
         };
-        // phone: this.phoneLoginInfo.phone,
-        // phone: this.toFindInfo.contactsPhone,
         _addAppointTry(params).then(res => {
           /*
              res id --> 下预约的时候用  
-             this.detailInfo.id --> 预约
+             this.productDetail.id --> 预约
           */
           if (res.data.success) {
-            let url = `../appointment/main?productId=${this.detailInfo.id}&id=${
-              res.data.data.id
-            }`;
+            let url = `../appointment/main?productId=${
+              _this.productDetail.id
+            }&id=${res.data.data.id}`;
             wx.navigateTo({ url });
           }
         });
-        // console.log(this.toFindInfo);
       }
     }
-    // ===================================================
-    // initDate() {
-    //   let date = new Date();
-    //   let year = date.getFullYear();
-    //   let month = date.getMonth() + 1;
-    //   this.currentMonth = month;
-    //   let day = date.getDate();
-    //   // 设置开始时间
-    //   this.begin = [year, month, day];
-    //   console.log(this.begin);
-    //   let nextYear = year;
-    //   let nextMonth = month + 1;
-    //   if (nextMonth > 12) {
-    //     nextMonth = 1;
-    //     nextYear = year + 1;
-    //   }
-    //   let nextMonthLastDay = new Date(nextYear, nextMonth, 0);
-    //   let nextDay = day;
-    //   if (day > nextMonthLastDay) {
-    //     nextDay = nextMonthLastDay;
-    //   }
-    //   // 设置结束时间
-    //   this.end = [nextYear, nextMonth, nextDay];
-    //   console.log(this.end);
-    // },
-    // selectMonth(month, year) {
-    //   console.log(year, month);
-    // },
-    // prev(year, month, weekIndex) {
-    //   console.log("prev");
-    //   if (this.currentMonth == month) {
-    //     this.hasNext = true;
-    //     this.hasPrev = false;
-    //   }
-    // },
-    // next(year, month, weekIndex) {
-    //   console.log("next");
-    //   if (this.currentMonth < month) {
-    //     this.hasNext = false;
-    //     this.hasPrev = true;
-    //   }
-    // },
-    // selectYear(year) {
-    //   console.log(year);
-    // },
-    // setToday(val, val1, val2) {
-    //   // console.log(this.$refs.calendar)
-    //   this.$refs.calendar.setToday();
-    // },
-    // select(val, val2) {
-    //   // console.log(val);
-    //   if (val.length > 3) {
-    //     console.log("最多选3个");
-    //     console.log((this.value.length = 3));
-    //   }
-    // }
   }
 };
 </script>
 
-<style lang="less" scoped>
+<style scoped>
 @import url("~mpvue-wxparse/src/wxParse.css");
 </style>

@@ -9,8 +9,8 @@
     <div class="aunt_info">
       <div class="info1">
         {{detailInfo.truename}}
-        <span>五星员工</span>
-        <span>ID:95271011</span>
+        <span v-text="detailInfo.level+'星员工'"></span>
+        <span v-text="'ID: '+detailInfo.workNum"></span>
       </div>
       <div class="info2">
         <span style="color:#666;">
@@ -50,29 +50,10 @@
     <div class="skill_info">
       <h3>技能展示</h3>
       <div class="skill_list">
-        <div class="list_item">
-          <img class="auth_right" :src="auntImg" mode="widthFix" />
-          <p>烹饪</p>
-        </div>
-        <div class="list_item">
-          <img class="auth_right" :src="auntImg" mode="widthFix" />
-          <p>烹饪</p>
-        </div>
-        <div class="list_item">
-          <img class="auth_right" :src="auntImg" mode="widthFix" />
-          <p>烹饪</p>
-        </div>
-        <div class="list_item">
-          <img class="auth_right" :src="auntImg" mode="widthFix" />
-          <p>烹饪</p>
-        </div>
-        <div class="list_item">
-          <img class="auth_right" :src="auntImg" mode="widthFix" />
-          <p>烹饪</p>
-        </div>
-        <div class="list_item">
-          <img class="auth_right" :src="auntImg" mode="widthFix" />
-          <p>烹饪</p>
+        <div class="list_item" v-for="(item,index) in skillList" :key="index">
+          <!-- auntImg -->
+          <img class="auth_right" :src="item.icon" mode="widthFix" />
+          <p v-text="item.name"></p>
         </div>
       </div>
     </div>
@@ -104,6 +85,7 @@
         :end="end"
         :events="events"
         @select="select"
+        :fromDetailPage="true"
         :canShowToast="false"
         ref="calendar"
         @selectMonth="selectMonth"
@@ -182,6 +164,7 @@ import Calendar from "change-mpvue-calendar";
 import toLoginPopup from "../../components/toLoginPopup";
 import { mapState, mapActions } from "vuex";
 import { _addAppoint } from "../../service/detail";
+import { _getStarClass } from "../../api/common";
 export default {
   data() {
     return {
@@ -215,8 +198,10 @@ export default {
         truename: "",
         workYears: "",
         appointTryId: "",
-        productId: ""
+        productId: "",
+        workNum: ""
       },
+      skillList: [],
       workDaysList: [],
       comments: [],
       showBtn: true
@@ -234,18 +219,18 @@ export default {
   onLoad(option) {
     // Object.assign(this.$data, this.$options.data());
     // 挑选小时工进入 --> 用于立即预约
-    console.log(option)
+    // console.log(option)
     this.detailInfo.productId = option.productId;
     if (this.detailInfo.appointTryId) {
       this.detailInfo.appointTryId = option.appointTryId;
     }
-    console.log(this.detailInfo)
+    // console.log(this.detailInfo)
     // 挑选小时工进入 和 我的预约进入
     this.auntId = option.id;
     let params = {
       id: this.auntId,
       month: option.time,
-      productId:this.detailInfo.productId,
+      productId: this.detailInfo.productId
     };
     if (option.showBtn == 0) {
       this.showBtn = false;
@@ -263,7 +248,6 @@ export default {
 
     _getEmployeeDetail(params).then(res => {
       if (res.data.success) {
-        console.log(res);
         _this.timesValue = [];
         _this.workDaysList = [];
         this.comments = [];
@@ -276,10 +260,18 @@ export default {
         _this.detailInfo.domicile = res1.domicile;
         _this.detailInfo.headImg = bastPath + res1.headImg;
         _this.detailInfo.id = res1.id;
-        _this.detailInfo.level = res1.level;
+        _this.detailInfo.level = _getStarClass(res1.level);
+        _this.detailInfo.workNum = res1.workNum;
+
         _this.detailInfo.price = res1.price;
         _this.detailInfo.truename = res1.truename;
         _this.detailInfo.workYears = res1.workYears;
+        this.skillList = res.data.data.skillsList;
+        if (this.skillList) {
+          this.skillList.forEach(val => {
+            val.icon = bastPath + val.icon;
+          });
+        }
         // 处理  commentData --> comments
         commentData.forEach(val => {
           val.userHeaderImg = bastPath + val.userHeaderImg;
@@ -296,6 +288,8 @@ export default {
             times.push(arr);
           });
           _this.workDaysList = resTimes;
+          console.log(111);
+          console.log(_this.workDaysList);
         }
         _this.timesValue = _this.timesValue.concat(times);
       }

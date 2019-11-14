@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <div style="padding-top:44px;">
+    <div style="padding-top:54px;">
       <swiper
         class="swiper"
         @change="bannerChange"
@@ -157,7 +157,8 @@ export default {
         productTypeTitle: "",
         smallImg: "",
         priceUnitStr: "",
-        type: 0
+        type: 0,
+        intro: ""
       },
       recommendProduct: {
         name: "",
@@ -167,7 +168,8 @@ export default {
         productTypeTitle: "",
         smallImg: "",
         priceUnitStr: "",
-        type: 0
+        type: 0,
+        intro: ""
       },
       activityProduct: {
         name: "",
@@ -177,7 +179,8 @@ export default {
         productTypeTitle: "",
         smallImg: "",
         priceUnitStr: "",
-        type: 0
+        type: 0,
+        intro: ""
       },
       movies: [],
       latitude: "",
@@ -320,6 +323,7 @@ export default {
                 );
               }
               this.mainProduct = mainData;
+              // this.mainProduct.intro = mainData.intro || "";
             }
 
             if (res.data.data.recommendProduct) {
@@ -332,6 +336,7 @@ export default {
                 );
               }
               this.recommendProduct = recommendData;
+              // this.recommendProduct.intro = recommendData.intro || "";
             }
 
             if (res.data.data.activityProduct) {
@@ -344,6 +349,7 @@ export default {
                 );
               }
               this.activityProduct = activityData;
+              // this.activityProduct.intro = activityData.intro || "";
             }
           }
         })
@@ -375,7 +381,7 @@ export default {
       }
     },
     toDetail(item) {
-      // type 3 两个都有  1体验包(detail)  2包月(classify_detail)
+      // type 3 两个都有  1体验包(detail)  2包月(classify_detail)--> 钟点工
       let id = item.productTypeId;
       console.log(item.productTypeId);
       if (item.type == 1) {

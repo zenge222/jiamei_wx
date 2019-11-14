@@ -6,7 +6,7 @@ const login = {
     mapKey: 'X7ABZ-724RG-CMFQX-I72XT-HSNSZ-HVBCR',
     APPID: 'wx49a9b81ff012bbd6',
     openId: '初始openId',
-    AppSecret: '5cf64256e73a5620ae3e70f8a9a667f6',
+    // AppSecret: '5cf64256e73a5620ae3e70f8a9a667f6',
     isIphoneX: false,
     // 手机登录
     phoneLogin: false,

@@ -85,7 +85,8 @@
     <van-popup custom-class="pay_pop" position="bottom" :show="paymentShow" @close="paymentClose">
       <div class="pop_content">
         <div class="pop_header">
-          <img class="header_img" mode="widthFix" :src="payPopProduct" />
+          <!-- payPopProduct -->
+          <img class="header_img" mode="widthFix" :src="productDetail.smallImg" />
           <div class="header_title">
             <h3>{{mealInfo.title}}</h3>
             <p>
